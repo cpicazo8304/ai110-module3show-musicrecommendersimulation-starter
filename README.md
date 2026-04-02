@@ -17,17 +17,106 @@ Replace this paragraph with your own summary of what your version does.
 
 ## How The System Works
 
-Explain your design in plain language.
+### Understanding of Real-World Systems
+From what I researched, recommendation systems are influenced by how the user interacts with the platform. Likes, dislikes, shares, skips, and replays contribute to what is recommended to them. Behind the scenes, a recommendation system uses scores to determine if a song or video would match a user's preferences. Collaborative filtering (using other users' behavior) looks at other similar users and sees additional songs or videos they have listened/watched and recommend those to a user. However, this could not work well with new users since they don't have as much of a prescence in platform. As for content-based filtering, this is more of looking at a user's profile only and determining what they like (kind of what will be done in this project).
 
-Some prompts to answer:
+### Features to Use
 
-- What features does each `Song` use in your system
-  - For example: genre, mood, energy, tempo
-- What information does your `UserProfile` store
-- How does your `Recommender` compute a score for each song
-- How do you choose which songs to recommend
+The features I will focus on will be (order in importance):
+  - Energy
+  - Acousticness
+  - Mood
+  - Valence
+  - Tempo
+  - Danceability
+  - Genre
+  - Artist
+  - Title
 
-You can include a simple diagram or bullet list if helpful.
+Features like artist and title make sense to exclude, given the amount of data we have available, but will include them but have them ranked in the bottom with a low weighting.
+
+### Weighted Scoring Formula
+Overall song score = sum(weight * similarity for each feature). Weights sum to 1, based on ranking:
+- Energy: 0.25
+- Acousticness: 0.20
+- Mood: 0.15
+- Valence: 0.12
+- Tempo: 0.10
+- Danceability: 0.08
+- Genre: 0.04
+- Artist: 0.02
+- Title: 0.02
+
+### Similarity Scores Formulas
+- **Numerical features (energy, acousticness, valence, tempo, danceability)**: Use `similarity = 1 - |song_value - user_preferred|`. For tempo (in BPM, not 0-1), normalize: `similarity = 1 - |tempo - pref| / (max_tempo - min_tempo)` (e.g., min=60, max=200).
+
+- **Categorical features**:
+  - **Genre and Mood**: Use fuzzy similarity matrices (based on relatedness, 0-1 scale).
+  - **Artist**: Exact match: `similarity = 1` if same artist, else `0`.
+  - **Title**: Exact match: `similarity = 1` if same title, else `0`.
+
+
+### Similarity Matrix for Categorical Features
+Since different moods and genres can be similar in the type of songs, having a discrete 1 or 0 if the equal or not wouldn't make sense, so having fuzzy matching based on relatedness makes more sense. Here they are:
+
+#### Genre Similarity Matrix
+(7x7, unique genres: ambient, indie pop, jazz, lofi, pop, rock, synthwave)
+
+| Genre      | ambient | indie pop | jazz | lofi | pop | rock | synthwave |
+|------------|---------|-----------|------|------|-----|------|----------|
+| ambient   | 1.0    | 0.4      | 0.5 | 0.8 | 0.3| 0.2 | 0.6     |
+| indie pop | 0.4    | 1.0      | 0.6 | 0.5 | 0.9| 0.7 | 0.5     |
+| jazz      | 0.5    | 0.6      | 1.0 | 0.6 | 0.5| 0.4 | 0.4     |
+| lofi      | 0.8    | 0.5      | 0.6 | 1.0 | 0.4| 0.3 | 0.5     |
+| pop       | 0.3    | 0.9      | 0.5 | 0.4 | 1.0| 0.6 | 0.7     |
+| rock      | 0.2    | 0.7      | 0.4 | 0.3 | 0.6| 1.0 | 0.5     |
+| synthwave | 0.6    | 0.5      | 0.4 | 0.5 | 0.7| 0.5 | 1.0     |
+
+#### Mood Similarity Matrix
+(6x6, unique moods: chill, focused, happy, intense, moody, relaxed)
+
+| Mood     | chill | focused | happy | intense | moody | relaxed |
+|----------|-------|---------|-------|---------|-------|---------|
+| chill   | 1.0  | 0.8    | 0.5  | 0.3    | 0.6  | 0.9    |
+| focused | 0.8  | 1.0    | 0.4  | 0.5    | 0.5  | 0.7    |
+| happy   | 0.5  | 0.4    | 1.0  | 0.6    | 0.3  | 0.6    |
+| intense | 0.3  | 0.5    | 0.6    | 1.0    | 0.7  | 0.4    |
+| moody   | 0.6  | 0.5    | 0.3    | 0.7    | 1.0  | 0.5    |
+| relaxed | 0.9  | 0.7    | 0.6    | 0.4    | 0.5  | 1.0    |
+
+### User Profile Information
+User profile should have their own scores like preferred_energy, preferred_valence, preferred_acousticness, preferred_tempo, preferred_danceability, preferred_genres, and preferred_moods. These should be scores on the range of [0, 1] (for numerical features) and categorical sets for genre/mood.
+
+#### Mathematical profile update rule
+For numeric features, use an exponential moving average (EMA) update after each user action:
+
+- `pref_new = (1 - \alpha) * pref_old + \alpha * song_value`
+- `\alpha` in (0,1] is the learning rate (e.g., 0.1)
+
+Example for energy on a like:
+
+- `pref_energy_new = 0.9 * pref_energy_old + 0.1 * song_energy`
+
+For negative signals (skip/dislike), push away:
+
+- `pref_energy_new = pref_energy_old + \beta * (pref_energy_old - song_energy)`
+
+or just reduce weight by decreasing confidence and normalizing.
+
+For categorical preferences, use counts and soft probabilities:
+
+- `genre_score[genre] += 1` on like, `-= 1` on skip (floor 0)
+- normalize to probabilities in [0,1]
+
+#### Ranking rule (song list)
+Compute `overall_score` for each candidate song, then sort by descending score:
+
+- `ranked_songs = sorted(songs, key=lambda s: s.overall_score, reverse=True)`
+
+This is the core pipeline: profile update → scoring rule → ranking rule.
+
+### Which songs are chosen? (ranking system)
+Based on the similarity scores and weighting system. They should lead to different scores that allows for a ranking system to be used to order songs in how related they are to the user's profile.
 
 ---
 
