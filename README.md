@@ -157,8 +157,8 @@ Based on the similarity scores and weighting system. They should lead to differe
 
 Here is an example of it:
 
-![Screenshot](screenshots\recommendations-part-1.png)
-![Screenshot](screenshots\recommendations-part-2.png)
+![Screenshot](screenshots/recommendations-part-1.png)
+![Screenshot](screenshots/recommendations-part-2.png)
 
 
 ### Potential Biases
@@ -226,29 +226,29 @@ Changed weights of energy (weight=0.25) and mood (weight=0.15). This made a diff
 ### User Profiles Tested
 
 #### High Energy
-![Screenshot](ai110-module3show-musicrecommendersimulation-starter\screenshots\high_energy_part1.png)
-![Screenshot](ai110-module3show-musicrecommendersimulation-starter\screenshots\high_energy_part2.png)
+![Screenshot](screenshots/high_energy_part1.png)
+![Screenshot](screenshots/high_energy_part2.png)
 
 #### Chilled Lofi
-![Screenshot](ai110-module3show-musicrecommendersimulation-starter\screenshots\chilled_lofi_part1.png)
-![Screenshot](ai110-module3show-musicrecommendersimulation-starter\screenshots\chilled_lofi_part2.png)
+![Screenshot](screenshots/chilled_lofi_part1.png)
+![Screenshot](screenshots/chilled_lofi_part2.png)
 
 
 #### Deep Intense Rock
-![Screenshot](ai110-module3show-musicrecommendersimulation-starter\screenshots\deep_intense_rock_part1.png)
-![Screenshot](ai110-module3show-musicrecommendersimulation-starter\screenshots\deep_intense_rock_part2.png)
+![Screenshot](screenshots/deep_intense_rock_part1.png)
+![Screenshot](screenshots/deep_intense_rock_part2.png)
 
 #### Conflicting Mood/Energy Edge Case
-![Screenshot](ai110-module3show-musicrecommendersimulation-starter\screenshots\conflicting_energy_mood_part1.png)
-![Screenshot](ai110-module3show-musicrecommendersimulation-starter\screenshots\conflicting_energy_mood_part2.png)
+![Screenshot](screenshots/conflicting_energy_mood_part1.png)
+![Screenshot](screenshots/conflicting_energy_mood_part2.png)
 
 #### Dead Center Edge Case
-![Screenshot](ai110-module3show-musicrecommendersimulation-starter\screenshots\dead_center_part1.png)
-![Screenshot](ai110-module3show-musicrecommendersimulation-starter\screenshots\dead_center_part2.png)
+![Screenshot](screenshots/dead_center_part1.png)
+![Screenshot](screenshots/dead_center_part2.png)
 
 #### Impossible Unicorn Edge Case
-![Screenshot](ai110-module3show-musicrecommendersimulation-starter\screenshots\impossible_unicorn_part1.png)
-![Screenshot](ai110-module3show-musicrecommendersimulation-starter\screenshots\impossible_unicorn_part2.png)
+![Screenshot](screenshots/impossible_unicorn_part1.png)
+![Screenshot](screenshots/impossible_unicorn_part2.png)
 
 ## Limitations and Risks
 
